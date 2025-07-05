@@ -1,0 +1,206 @@
+[
+    {
+        "id": 1,
+        "title": "Ba lô Fjallraven - Foldsack No. 1, phù hợp với laptop 15 inch",
+        "price": 109.95,
+        "description": "Chiếc ba lô hoàn hảo cho việc sử dụng hàng ngày và đi dạo trong rừng. Được làm từ vải G-1000 HeavyDuty bền bỉ, có thể tùy chỉnh bằng sáp Greenland. Ngăn chính rộng rãi với dây rút và nắp gập, cùng với túi phía trước và dây đeo vai đệm.",
+        "category": "quần áo nam",
+        "image": "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg",
+        "rating": {
+            "rate": 3.9,
+            "count": 120
+        }
+    },
+    {
+        "id": 2,
+        "title": "Áo thun nam tay ngắn",
+        "price": 22.3,
+        "description": "Áo thun nam cổ tròn, tay ngắn, chất liệu cotton mềm mại, thoáng mát, phù hợp cho các hoạt động hàng ngày.",
+        "category": "quần áo nam",
+        "image": "https://fakestoreapi.com/img/71-3HjGNDUL._AC_UL600_SR600,400_.jpg",
+        "rating": {
+            "rate": 4.1,
+            "count": 259
+        }
+    },
+    {
+        "id": 3,
+        "title": "Áo khoác nữ thời trang",
+        "price": 55.99,
+        "description": "Áo khoác nữ kiểu dáng hiện đại, chất liệu dày dặn, giữ ấm tốt, phù hợp cho mùa đông.",
+        "category": "quần áo nữ",
+        "image": "https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg",
+        "rating": {
+            "rate": 4.7,
+            "count": 500
+        }
+    },
+    {
+        "id": 4,
+        "title": "Vòng cổ vàng 18K",
+        "price": 695,
+        "description": "Vòng cổ làm từ vàng 18K, thiết kế tinh xảo, mang lại vẻ đẹp sang trọng và quý phái.",
+        "category": "trang sức",
+        "image": "https://fakestoreapi.com/img/71ya6v7xJIL._AC_UL600_SR600,400_.jpg",
+        "rating": {
+            "rate": 4.9,
+            "count": 400
+        }
+    },
+    {
+        "id": 5,
+        "title": "Đồng hồ nam dây da",
+        "price": 125,
+        "description": "Đồng hồ nam với dây da cao cấp, mặt kính chống xước, thiết kế lịch lãm, phù hợp cho doanh nhân.",
+        "category": "trang sức",
+        "image": "https://fakestoreapi.com/img/71Zy32Y5hIL._AC_UL600_SR600,400_.jpg",
+        "rating": {
+            "rate": 4.6,
+            "count": 340
+        }
+    },
+    {
+        "id": 6,
+        "title": "Áo khoác nữ mùa đông",
+        "price": 59.99,
+        "description": "Áo khoác nữ mùa đông, chất liệu dày dặn, giữ ấm tốt, thiết kế thời trang, phù hợp cho mùa lạnh.",
+        "category": "quần áo nữ",
+        "image": "https://fakestoreapi.com/img/71HblAHs5xL._AC_UY879_-2.jpg",
+        "rating": {
+            "rate": 4.5,
+            "count": 250
+        }
+    },
+    {
+        "id": 7,
+        "title": "Vòng tay bạc nữ",
+        "price": 49.99,
+        "description": "Vòng tay làm từ bạc cao cấp, thiết kế tinh tế, phù hợp làm quà tặng cho người thân yêu.",
+        "category": "trang sức",
+        "image": "https://fakestoreapi.com/img/71ya6v7xJIL._AC_UL600_SR600,400_.jpg",
+        "rating": {
+            "rate": 4.8,
+            "count": 180
+        }
+    },
+    {
+        "id": 8,
+        "title": "Áo sơ mi nam dài tay",
+        "price": 39.99,
+        "description": "Áo sơ mi nam dài tay, chất liệu cotton, thiết kế đơn giản, phù hợp cho công sở và dạo phố.",
+        "category": "quần áo nam",
+        "image": "https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_.jpg",
+        "rating": {
+            "rate": 4.2,
+            "count": 300
+        }
+    },
+    {
+        "id": 9,
+        "title": "Nhẫn bạc nữ đính đá",
+        "price": 89.99,
+        "description": "Nhẫn bạc nữ đính đá quý, thiết kế sang trọng, mang lại vẻ đẹp quý phái cho người đeo.",
+        "category": "trang sức",
+        "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL600_SR600,400_.jpg",
+        "rating": {
+            "rate": 4.9,
+            "count": 220
+        }
+    },
+    {
+        "id": 10,
+        "title": "Áo khoác nam thể thao",
+        "price": 69.99,
+        "description": "Áo khoác nam thể thao, chất liệu nhẹ, thoáng khí, phù hợp cho các hoạt động ngoài trời.",
+        "category": "quần áo nam",
+        "image": "https://fakestoreapi.com/img/71HblAHs5xL._AC_UY879_-2.jpg",
+        "rating": {
+            "rate": 4.3,
+            "count": 275
+        }
+    },
+    {
+        "id": 11,
+        "title": "Dây chuyền bạc nữ",
+        "price": 59.99,
+        "description": "Dây chuyền bạc nữ, thiết kế đơn giản nhưng tinh tế, phù hợp với nhiều phong cách thời trang.",
+        "category": "trang sức",
+        "image": "https://fakestoreapi.com/img/71ya6v7xJIL._AC_UL600_SR600,400_.jpg",
+        "rating": {
+            "rate": 4.7,
+            "count": 190
+        }
+    },
+    {
+        "id": 12,
+        "title": "Áo thun nữ cổ tròn",
+        "price": 29.99,
+        "description": "Áo thun nữ cổ tròn, chất liệu cotton mềm mại, thoáng mát, phù hợp cho mùa hè.",
+        "category": "quần áo nữ",
+        "image": "https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_.jpg",
+        "rating": {
+            "rate": 4.4,
+            "count": 210
+        }
+    },
+    {
+        "id": 13,
+        "title": "Vòng cổ ngọc trai",
+        "price": 99.99,
+        "description": "Vòng cổ ngọc trai tự nhiên, thiết kế sang trọng, mang lại vẻ đẹp quý phái cho người đeo.",
+        "category": "trang sức",
+        "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL600_SR600,400_.jpg",
+        "rating": {
+            "rate": 4.9,
+            "count": 160
+        }
+    },
+    {
+        "id": 14,
+        "title": "Áo sơ mi nữ tay dài",
+        "price": 45.99,
+        "description": "Áo sơ mi nữ tay dài, chất liệu vải mềm mại, thiết kế thanh lịch, phù hợp cho công sở.",
+        "category": "quần áo nữ",
+        "image": "https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg",
+        "rating": {
+            "rate": 4.5,
+            "count": 230
+        }
+    },
+    {
+        "id": 15,
+        "title": "Nhẫn vàng nam",
+        "price": 129.99,
+        "description": "Nhẫn vàng nam, thiết kế mạnh mẽ, thể hiện phong cách nam tính và đẳng cấp.",
+        "category": "trang sức",
+        "image": "https://fakestoreapi.com/img/71ya6v7xJIL._AC_UL600_SR600,400_.jpg",
+        "rating": {
+            "rate": 4.6,
+            "count": 150
+        }
+    },
+    {
+        "id": 16,
+        "title": "Áo khoác gió nam",
+        "price": 79.99,
+        "description": "Áo khoác gió nam, chất liệu chống thấm nước, thiết kế thể thao, phù hợp cho các hoạt động ngoài trời.",
+        "category": "quần áo nam",
+        "image": "https://fakestoreapi.com/img/71HblAHs5xL._AC_UY879_-2.jpg",
+        "rating": {
+            "rate": 4.3,
+            "count": 200
+        }
+    },
+    {
+        "id": 17,
+        "title": "Vòng tay da nam",
+        "price": 34.99,
+        "description": "Vòng tay da nam, thiết kế đơn giản nhưng cá tính, phù hợp với phong cách thời trang hiện đại.",
+        "category": "trang sức",
+        "image": "https://fakestoreapi.com/img/71HblAHs5xL._AC_UY879_-2.jpg",
+        "rating": {
+            "rate": 3.8,
+            "count": 679
+        }
+    }
+]

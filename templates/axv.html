@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hình ảnh sản phẩm - Áo khoác gió nam</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 40px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+        
+        .product-info {
+            padding: 25px;
+        }
+        
+        .product-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+        
+        .product-price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #e74c3c;
+            margin-bottom: 15px;
+        }
+        
+        .product-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .score-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .category-tag {
+            background: #f8f9fa;
+            color: #666;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            border: 1px solid #e9ecef;
+        }
+        
+        .product-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+        
+        .buy-button {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .buy-button:hover {
+            background: linear-gradient(135deg, #5a6fd8, #6a4190);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            color: #666;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        .stats {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-item {
+            display: inline-block;
+            margin: 0 15px;
+            font-size: 1.1rem;
+        }
+        
+        .stat-number {
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            
+            .product-card {
+                margin-bottom: 20px;
+            }
+        }
+        
+        .image-error {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1.1rem;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🖼️ Hình ảnh sản phẩm</h1>
+            <p>Áo khoác gió nam - Các sản phẩm phù hợp nhất</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-number">4</span> sản phẩm tìm thấy
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">100%</span> có hình ảnh
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">⭐</span> Độ phù hợp cao
+            </div>
+        </div>
+        
+        <div class="products-grid">
+            <!-- Product 1 -->
+            <div class="product-card">
+                <img src="https://fakestoreapi.com/img/71HblAHs5xL._AC_UY879_-2.jpg" 
+                     alt="Áo khoác gió nam" 
+                     class="product-image"
+                     onerror="this.parentElement.innerHTML='<div class=\'image-error\'>🖼️ Hình ảnh không tải được</div>'">
+                <div class="product-info">
+                    <h3 class="product-title">Áo khoác gió nam</h3>
+                    <div class="product-price">$79.99</div>
+                    <div class="product-details">
+                        <span class="score-badge">⭐ 165 điểm</span>
+                        <span class="category-tag">Quần áo nam</span>
+                    </div>
+                    <p class="product-description">Áo khoác gió nam chất lượng cao, thiết kế hiện đại, phù hợp cho mọi hoạt động ngoài trời. Chống nước, chống gió hiệu quả.</p>
+                    <button class="buy-button" onclick="alert('Mua sản phẩm: Áo khoác gió nam - $79.99')">
+                        🛒 Mua ngay - $79.99
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Product 2 -->
+            <div class="product-card">
+                <img src="https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg" 
+                     alt="Áo khoác nữ thời trang" 
+                     class="product-image"
+                     onerror="this.parentElement.innerHTML='<div class=\'image-error\'>🖼️ Hình ảnh không tải được</div>'">
+                <div class="product-info">
+                    <h3 class="product-title">Áo khoác nữ thời trang</h3>
+                    <div class="product-price">$55.99</div>
+                    <div class="product-details">
+                        <span class="score-badge">⭐ 130 điểm</span>
+                        <span class="category-tag">Quần áo nữ</span>
+                    </div>
+                    <p class="product-description">Áo khoác nữ phong cách thời trang, chất liệu cao cấp, thiết kế tinh tế. Phù hợp cho cả công sở và dạo phố.</p>
+                    <button class="buy-button" onclick="alert('Mua sản phẩm: Áo khoác nữ thời trang - $55.99')">
+                        🛒 Mua ngay - $55.99
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Product 3 -->
+            <div class="product-card">
+                <img src="https://fakestoreapi.com/img/71-3HjGNDUL._AC_UL600_SR600,400_.jpg" 
+                     alt="Áo thun nam tay ngắn" 
+                     class="product-image"
+                     onerror="this.parentElement.innerHTML='<div class=\'image-error\'>🖼️ Hình ảnh không tải được</div>'">
+                <div class="product-info">
+                    <h3 class="product-title">Áo thun nam tay ngắn</h3>
+                    <div class="product-price">$22.30</div>
+                    <div class="product-details">
+                        <span class="score-badge">⭐ 105 điểm</span>
+                        <span class="category-tag">Quần áo nam</span>
+                    </div>
+                    <p class="product-description">Áo thun nam tay ngắn basic, chất cotton 100%, thoáng mát, phù hợp mặc hàng ngày. Thiết kế simple nhưng sang trọng.</p>
+                    <button class="buy-button" onclick="alert('Mua sản phẩm: Áo thun nam tay ngắn - $22.30')">
+                        🛒 Mua ngay - $22.30
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Product 4 -->
+            <div class="product-card">
+                <img src="https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_.jpg" 
+                     alt="Áo sơ mi nam dài tay" 
+                     class="product-image"
+                     onerror="this.parentElement.innerHTML='<div class=\'image-error\'>🖼️ Hình ảnh không tải được</div>'">
+                <div class="product-info">
+                    <h3 class="product-title">Áo sơ mi nam dài tay</h3>
+                    <div class="product-price">$39.99</div>
+                    <div class="product-details">
+                        <span class="score-badge">⭐ 105 điểm</span>
+                        <span class="category-tag">Quần áo nam</span>
+                    </div>
+                    <p class="product-description">Áo sơ mi nam dài tay formal, chất liệu cotton pha, phù hợp đi làm và các dịp trang trọng. Thiết kế lịch sự, thanh lịch.</p>
+                    <button class="buy-button" onclick="alert('Mua sản phẩm: Áo sơ mi nam dài tay - $39.99')">
+                        🛒 Mua ngay - $39.99
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; padding: 30px; background: #f8f9fa; color: #666;">
+            <p>💡 <strong>Lưu ý:</strong> Nếu hình ảnh không hiển thị, có thể do vấn đề kết nối mạng. Bạn có thể thử refresh trang hoặc kiểm tra kết nối internet.</p>
+            <p style="margin-top: 10px;">🛒 <strong>Để mua hàng:</strong> Click vào nút "Mua ngay" hoặc liên hệ với chúng tôi để được tư vấn chi tiết!</p>
+        </div>
+    </div>
+    
+    <script>
+        // Add loading animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = document.querySelectorAll('.product-image');
+            images.forEach(img => {
+                img.addEventListener('load', function() {
+                    this.style.opacity = '1';
+                });
+                img.addEventListener('error', function() {
+                    console.log('Image failed to load:', this.src);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'image-error';
+                    errorDiv.innerHTML = '🖼️ Hình ảnh không tải được<br><small>URL: ' + this.src + '</small>';
+                    this.parentElement.replaceChild(errorDiv, this);
+                });
+            });
+        });
+        
+        // Add smooth scrolling and animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
+                }
+            });
+        });
+        
+        document.querySelectorAll('.product-card').forEach(card => {
+            observer.observe(card);
+        });
+        
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            .product-card {
+                opacity: 0;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

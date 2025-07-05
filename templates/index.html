@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trợ lý Mua sắm Thông minh</title>
+    <link rel="stylesheet" href="/static/style.css">
+
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🛍️ Trợ lý Mua sắm Thông minh</h1>
+            <p>Tư vấn sản phẩm cá nhân hóa với AI</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Chat Section -->
+            <div class="chat-section">
+                <div class="chat-container" id="chatContainer">
+                    <div class="welcome-message">
+                        Chào mừng bạn đến với trợ lý mua sắm thông minh!
+                        <br>Hãy bắt đầu cuộc trò chuyện để tôi có thể tư vấn sản phẩm phù hợp nhất cho bạn.
+                    </div>
+                </div>
+
+                <div class="input-section">
+                    <div id="errorContainer"></div>
+                    <div class="input-container">
+                        <input type="text" class="message-input" id="messageInput"
+                            placeholder="Nhập tin nhắn của bạn..." autocomplete="off">
+                        <button class="send-button" id="sendButton">
+                            Gửi
+                        </button>
+                    </div>
+                    <div id="loadingIndicator" class="loading" style="display: none; margin-top: 10px;">
+                        <div class="spinner"></div>
+                        <span>Đang xử lý...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <h3>👤 Thông tin cá nhân</h3>
+                <div class="profile-info" id="profileInfo">
+                    <div class="profile-item">
+                        <span class="profile-label">Trạng thái:</span>
+                        <span class="profile-value">
+                            <span class="status-indicator status-incomplete"></span>
+                            Chưa hoàn thành
+                        </span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Tên:</span>
+                        <span class="profile-value">Chưa có</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Tuổi:</span>
+                        <span class="profile-value">Chưa có</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Giới tính:</span>
+                        <span class="profile-value">Chưa có</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Sở thích:</span>
+                        <span class="profile-value">Chưa có</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Ngân sách:</span>
+                        <span class="profile-value">Chưa có</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Số điện thoại:</span>
+                        <span class="profile-value">Chưa có</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Địa chỉ:</span>
+                        <span class="profile-value">Chưa có</span>
+                    </div>
+                </div>
+
+                <h3>⚙️ Điều khiển</h3>
+                <div class="controls">
+                    <button class="control-button" onclick="clearChat()">
+                        🗑️ Xóa cuộc trò chuyện
+                    </button>
+                    <button class="control-button" onclick="newSession()">
+                        🔄 Bắt đầu phiên mới
+                    </button>
+                    <button class="control-button" onclick="exportChat()">
+                        💾 Xuất cuộc trò chuyện
+                    </button>
+                </div>
+
+                <div class="session-info">
+                    Session ID: <span id="sessionId">Chưa có</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div class="image-modal" id="imageModal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img id="modalImage" src="" alt="">
+    </div>
+
+    <script>
+        class ShoppingAssistant {
+            constructor() {
+                this.apiUrl = 'http://localhost:8000';
+                this.sessionId = null;
+                this.isLoading = false;
+                this.chatHistory = [];
+
+                if (!this.initializeElements()) {
+                    return;
+                }
+                this.bindEvents();
+                this.startNewSession();
+            }
+
+            initializeElements() {
+                this.chatContainer = document.getElementById('chatContainer');
+                this.messageInput = document.getElementById('messageInput');
+                this.sendButton = document.getElementById('sendButton');
+                this.loadingIndicator = document.getElementById('loadingIndicator');
+                this.errorContainer = document.getElementById('errorContainer');
+                this.profileInfo = document.getElementById('profileInfo');
+                this.sessionIdElement = document.getElementById('sessionId');
+                if (!this.chatContainer || !this.messageInput || !this.sendButton) {
+                    console.error('Không tìm thấy các element HTML cần thiết!');
+                    return false;
+                }
+                return true;
+            }
+
+            bindEvents() {
+                this.sendButton.addEventListener('click', () => this.sendMessage());
+                this.messageInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+            }
+
+            startNewSession() {
+                this.sessionId = null;
+                this.chatHistory = [];
+                this.updateSessionId('Đang tạo...');
+                this.sendMessage('Xin chào!');
+            }
+
+            async sendMessage(customMessage = null) {
+                const message = customMessage || this.messageInput.value.trim();
+                if (!message || this.isLoading) return;
+
+                // Clear input if not custom message
+                if (!customMessage) {
+                    this.messageInput.value = '';
+                }
+
+                // Add user message to chat
+                if (!customMessage) {
+                    this.addMessage(message, 'user');
+                }
+
+                this.setLoading(true);
+                this.clearError();
+
+                try {
+                    const response = await fetch(`${this.apiUrl}/chat`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: message,
+                            session_id: this.sessionId
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+
+                    // Update session ID
+                    this.sessionId = data.session_id;
+                    this.updateSessionId(this.sessionId.slice(0, 8) + '...');
+
+                    // Enhanced debug logging
+                    console.log('🔍 All possible image fields:');
+                    console.log('  - data.images:', !!data.images);
+                    console.log('  - data.image_data:', !!data.image_data);
+                    console.log('  - data.products:', !!data.products);
+                    console.log('  - data.suggested_products:', !!data.suggested_products);
+
+                    // Enhanced image handling logic
+                    let images = [];
+                    let htmlContent = null;
+
+                    // Method 1: Direct images array
+                    if (data.images && Array.isArray(data.images) && data.images.length > 0) {
+                        images = data.images;
+                        console.log(`✅ Found ${images.length} images in data.images`);
+                    } else if (data.image_data && Array.isArray(data.image_data) && data.image_data.length > 0) {
+                        images = data.image_data;
+                        console.log(`✅ Found ${images.length} images in data.image_data`);
+                    } else if (data.products && Array.isArray(data.products) && data.products.length > 0) {
+                        images = data.products;
+                        console.log(`✅ Found ${images.length} images in data.products`);
+                    }
+
+                    // Method 2: HTML content or image gallery
+                    if (data.html_content || data.image_gallery) {
+                        htmlContent = data.html_content || data.image_gallery;
+                        console.log('✅ Found HTML content for images');
+                    }
+
+                    // Method 3: Fallback - check if backend indicates images exist
+                    if (data.has_images && data.image_count > 0 && !images.length && !htmlContent) {
+                        console.log('⚠️ Backend indicates images exist but not found in response');
+                        // Create placeholder HTML
+                        htmlContent = `
+                <div class="image-placeholder" style="padding: 20px; background: #f9f9f9; border-radius: 8px; text-align: center;">
+                    <p>🖼️ Hình ảnh đang được tải...</p>
+                    <p style="font-size: 12px; color: #666;">Phát hiện ${data.image_count} hình ảnh nhưng chưa hiển thị được</p>
+                </div>
+            `;
+                    }
+
+                    // Choose appropriate rendering method
+                    if (htmlContent) {
+                        // Use HTML content method
+                        console.log('🎨 Rendering with HTML content');
+                        this.addMessageWithHTML(data.response, 'bot', htmlContent);
+                    } else if (images.length > 0) {
+                        // Use images array method
+                        console.log('📸 Rendering with images array');
+                        this.addMessage(data.response, 'bot', images);
+                    } else {
+                        // Text only
+                        console.log('📝 Rendering text only');
+                        this.addMessage(data.response, 'bot');
+                    }
+
+                    // Update profile
+                    this.updateProfile(data.user_profile, data.is_profile_complete);
+
+                    // Store in history
+                    this.chatHistory.push({
+                        user: message,
+                        bot: data.response,
+                        images: images,
+                        html_content: htmlContent,
+                        timestamp: new Date().toISOString()
+                    });
+
+                } catch (error) {
+                    console.error('❌ Error:', error);
+                    this.showError(`Lỗi kết nối: ${error.message}. Vui lòng kiểm tra xem API có đang chạy không.`);
+                } finally {
+                    this.setLoading(false);
+                    // Auto focus to input after sending
+                    if (!customMessage) {
+                        setTimeout(() => {
+                            this.messageInput.focus();
+                        }, 100);
+                    }
+                }
+            }
+
+            // Method to add message with HTML content
+            addMessageWithHTML(content, sender, htmlContent) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}`;
+
+                const avatar = document.createElement('div');
+                avatar.className = 'message-avatar';
+                avatar.textContent = sender === 'user' ? 'B' : 'AI';
+
+                const messageContent = document.createElement('div');
+                messageContent.className = 'message-content';
+                messageContent.innerHTML = this.formatMessage(content);
+
+                // Add HTML content (product gallery) if available
+                if (htmlContent) {
+                    const htmlDiv = document.createElement('div');
+                    htmlDiv.innerHTML = htmlContent;
+
+                    // Make images clickable in the HTML content
+                    // Make images clickable in the HTML content
+                    const images = htmlDiv.querySelectorAll('img');
+                    images.forEach((img, index) => {
+                        img.style.cursor = 'pointer';
+
+                        // Get product info from the image's context
+                        const productName = this.getProductNameFromContext(img, htmlDiv, index);
+
+                        // Make sure parent has relative positioning
+                        const parent = img.closest('.image-item') || img.parentElement;
+                        if (parent) {
+                            parent.style.position = 'relative';
+
+                            // Create and add buy button if it doesn't exist
+                            if (!parent.querySelector('.buy-now-overlay')) {
+                                const buyOverlay = document.createElement('div');
+                                buyOverlay.className = 'buy-now-overlay';
+                                buyOverlay.innerHTML = '🛍️ Mua ngay';
+
+                                console.log('✅ Created buy button for:', productName);
+                                console.log('✅ Buy overlay element:', buyOverlay);
+
+                                buyOverlay.addEventListener('click', (e) => {
+                                    e.stopPropagation();
+                                    this.messageInput.value = `Tôi muốn mua ${productName}`;
+                                    this.messageInput.focus();
+                                });
+
+                                parent.appendChild(buyOverlay);
+                            }
+                        }
+
+                        img.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            // Show enlarged image
+                            this.openModal(img.src);
+                        });
+
+                        // Enhanced error handling with fallback image
+                        img.addEventListener('error', () => {
+                            console.log(`❌ Image failed to load: ${img.src}`);
+                            img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23f0f0f0"/%3E%3Ctext x="100" y="100" text-anchor="middle" dy=".3em" fill="%23999" font-size="12"%3EKhông tải được ảnh%3C/text%3E%3C/svg%3E';
+                            img.alt = 'Không tải được ảnh';
+                        });
+
+                        img.addEventListener('load', () => {
+                            console.log(`✅ Image loaded successfully: ${img.src}`);
+                        });
+                    });
+
+                const buyButtons = htmlDiv.querySelectorAll('.buy-now-overlay, [data-buy-button]');
+                buyButtons.forEach((button, index) => {
+                    const productName = this.getProductNameFromContext(button, htmlDiv, index);
+                    button.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.messageInput.value = `Tôi muốn mua ${productName}`;
+                        this.messageInput.focus();
+                    });
+                });
+                messageContent.appendChild(htmlDiv);
+            }
+
+                messageDiv.appendChild(avatar);
+                messageDiv.appendChild(messageContent);
+
+            // Remove welcome message if exists
+            const welcomeMessage = this.chatContainer.querySelector('.welcome-message');
+            if(welcomeMessage) {
+                welcomeMessage.remove();
+            }
+
+                this.chatContainer.appendChild(messageDiv);
+        this.scrollToBottom();
+            }
+
+        addMessage(content, sender, images = []) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = sender === 'user' ? 'B' : 'AI';
+
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.innerHTML = this.formatMessage(content);
+
+            // Add image gallery if images exist
+            if (images && images.length > 0) {
+                const galleryDiv = this.createImageGallery(images);
+                messageContent.appendChild(galleryDiv);
+            }
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(messageContent);
+
+            // Remove welcome message if exists
+            const welcomeMessage = this.chatContainer.querySelector('.welcome-message');
+            if (welcomeMessage) {
+                welcomeMessage.remove();
+            }
+
+            this.chatContainer.appendChild(messageDiv);
+            this.scrollToBottom();
+        }
+
+        createImageGallery(images) {
+            const galleryDiv = document.createElement('div');
+            galleryDiv.className = 'image-gallery';
+            galleryDiv.style.display = 'grid';
+            galleryDiv.style.gridTemplateColumns = 'repeat(auto-fit, minmax(250px, 1fr))';
+            galleryDiv.style.gap = '15px';
+            galleryDiv.style.marginTop = '15px';
+
+            console.log(`🖼️ Creating gallery with ${images.length} images`);
+
+            images.forEach((image, index) => {
+                const imageItem = document.createElement('div');
+                imageItem.className = 'image-item';
+                imageItem.style.position = 'relative';
+                imageItem.style.border = '1px solid #ddd';
+                imageItem.style.borderRadius = '8px';
+                imageItem.style.padding = '10px';
+                imageItem.style.background = '#fff';
+                imageItem.style.overflow = 'visible';
+
+                const img = document.createElement('img');
+
+                // Handle different possible image URL formats
+                const imageUrl = image.image_url || image.url || image.src || image.thumbnail_url || image.imageUrl || '';
+                const productName = image.product_name || image.title || `Sản phẩm ${index + 1}`;
+
+                console.log(`📸 Image ${index + 1} URL:`, imageUrl);
+
+                if (!imageUrl) {
+                    console.log(`❌ No image URL found for image ${index + 1}:`, image);
+                }
+
+                img.src = imageUrl;
+                img.alt = image.alt_text || image.title || image.product_name || `Product Image ${index + 1}`;
+                img.style.width = '100%';
+                img.style.height = '200px';
+                img.style.objectFit = 'cover';
+                img.style.borderRadius = '4px';
+                img.style.cursor = 'pointer';
+
+                // Enhanced error handling
+                img.addEventListener('error', (e) => {
+                    console.log(`❌ Image ${index + 1} failed to load:`, imageUrl);
+                    img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="250" height="200" viewBox="0 0 250 200"%3E%3Crect width="250" height="200" fill="%23f0f0f0"/%3E%3Ctext x="125" y="100" text-anchor="middle" dy=".3em" fill="%23999" font-size="12"%3EKhông tải được ảnh%3C/text%3E%3C/svg%3E';
+                    img.alt = 'Không tải được ảnh';
+                });
+
+                img.addEventListener('load', () => {
+                    console.log(`✅ Image ${index + 1} loaded successfully`);
+                });
+
+                // Click handler to open modal and send buy message
+                img.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    // Show enlarged image
+                    this.openModal(imageUrl || img.src);
+                });
+
+                // Add buy now overlay
+                const buyOverlay = document.createElement('div');
+                buyOverlay.className = 'buy-now-overlay';
+                buyOverlay.innerHTML = '🛍️ Mua ngay';
+
+                buyOverlay.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.messageInput.value = `Tôi muốn mua ${productName}`;
+                    this.messageInput.focus();
+                });
+
+                const imageInfo = document.createElement('div');
+                imageInfo.className = 'image-info';
+                imageInfo.innerHTML = `
+            <h4>${productName}</h4>
+            <div class="price">💰 $${image.price || '0.00'}</div>
+            <div class="rating">⭐ ${image.similarity_score || 0} điểm</div>
+            <div class="description">
+                ${(image.description || 'Không có mô tả').substring(0, 80)}${image.description && image.description.length > 80 ? '...' : ''}
+            </div>
+        `;
+
+                imageItem.appendChild(img);
+                imageItem.appendChild(buyOverlay);
+                imageItem.appendChild(imageInfo);
+                galleryDiv.appendChild(imageItem);
+            });
+
+            return galleryDiv;
+        }
+
+        getProductNameFromContext(img, htmlDiv, index) {
+            // Try to find product name from various sources
+            const parent = img.closest('.image-item') || img.parentElement;
+
+            // Look for h4, title, or product name in the context
+            let productName = 'sản phẩm này';
+
+            if (parent) {
+                const h4 = parent.querySelector('h4');
+                const titleElement = parent.querySelector('[data-product-name]');
+
+                if (h4 && h4.textContent.trim()) {
+                    productName = h4.textContent.trim();
+                } else if (titleElement) {
+                    productName = titleElement.getAttribute('data-product-name');
+                } else if (img.alt && img.alt !== 'Product Image') {
+                    productName = img.alt;
+                }
+            }
+
+            return productName;
+        }
+
+        openModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+
+            modal.style.display = 'block';
+            modalImg.src = imageSrc;
+
+            // Close modal when clicking outside the image
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    this.closeModal();
+                }
+            });
+        }
+
+        closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = 'none';
+        }
+
+        formatMessage(content) {
+            if (!content) return '';
+
+            // Convert markdown-style formatting to HTML
+            return content
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                .replace(/\n/g, '<br>')
+                .replace(/---/g, '<hr>')
+                // Handle emoji and special formatting
+                .replace(/💰/g, '<span class="emoji">💰</span>')
+                .replace(/⭐/g, '<span class="emoji">⭐</span>')
+                .replace(/🛒/g, '<span class="emoji">🛒</span>')
+                .replace(/🛍️/g, '<span class="emoji">🛍️</span>')
+                .replace(/📸/g, '<span class="emoji">📸</span>')
+                .replace(/🖼️/g, '<span class="emoji">🖼️</span>');
+        }
+
+        updateProfile(profile, isComplete) {
+            const statusIndicator = this.profileInfo.querySelector('.status-indicator');
+            const statusText = statusIndicator.nextSibling;
+
+            if (isComplete) {
+                statusIndicator.className = 'status-indicator status-complete';
+                statusText.textContent = 'Hoàn thành';
+            } else {
+                statusIndicator.className = 'status-indicator status-incomplete';
+                statusText.textContent = 'Chưa hoàn thành';
+            }
+
+            const items = this.profileInfo.querySelectorAll('.profile-item');
+            items[1].querySelector('.profile-value').textContent = profile.name || 'Chưa có';
+            items[2].querySelector('.profile-value').textContent = profile.age || 'Chưa có';
+            items[3].querySelector('.profile-value').textContent = profile.gender || 'Chưa có';
+            items[4].querySelector('.profile-value').textContent =
+                profile.preferences && profile.preferences.length > 0
+                    ? profile.preferences.join(', ')
+                    : 'Chưa có';
+            items[5].querySelector('.profile-value').textContent = profile.budget_range || 'Chưa có';
+            items[6].querySelector('.profile-value').textContent = profile.phone || 'Chưa có';
+            items[7].querySelector('.profile-value').textContent = profile.address || 'Chưa có';
+        }
+
+        updateSessionId(sessionId) {
+            if (this.sessionIdElement) {
+                this.sessionIdElement.textContent = sessionId;
+            }
+        }
+
+        setLoading(loading) {
+            this.isLoading = loading;
+            this.loadingIndicator.style.display = loading ? 'flex' : 'none';
+            this.sendButton.disabled = loading;
+            this.messageInput.disabled = loading;
+
+            if (loading) {
+                this.sendButton.textContent = 'Đang gửi...';
+            } else {
+                this.sendButton.textContent = 'Gửi';
+            }
+        }
+
+        showError(message) {
+            this.errorContainer.innerHTML = `
+            <div class="error-message">
+                ⚠️ ${message}
+                <button onclick="this.parentElement.remove()" style="float: right; background: none; border: none; color: #fff; cursor: pointer;">&times;</button>
+            </div>
+        `;
+
+            // Auto hide error after 10 seconds
+            setTimeout(() => {
+                const errorMsg = this.errorContainer.querySelector('.error-message');
+                if (errorMsg) {
+                    errorMsg.remove();
+                }
+            }, 10000);
+        }
+
+        clearError() {
+            this.errorContainer.innerHTML = '';
+        }
+
+        scrollToBottom() {
+            setTimeout(() => {
+                this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
+            }, 100);
+        }
+        }
+
+        // Global functions for control buttons
+        function clearChat() {
+            const assistant = window.shoppingAssistant;
+            if (assistant && confirm('Bạn có chắc muốn xóa toàn bộ cuộc trò chuyện?')) {
+                assistant.chatContainer.innerHTML = '<div class="welcome-message">Cuộc trò chuyện đã được xóa. Hãy bắt đầu lại!</div>';
+                assistant.chatHistory = [];
+                assistant.messageInput.focus();
+            }
+        }
+
+        function newSession() {
+            const assistant = window.shoppingAssistant;
+            if (assistant && confirm('Bạn có chắc muốn bắt đầu phiên mới?')) {
+                assistant.startNewSession();
+            }
+        }
+
+        function exportChat() {
+            const assistant = window.shoppingAssistant;
+            if (!assistant || assistant.chatHistory.length === 0) {
+                alert('Không có cuộc trò chuyện nào để xuất!');
+                return;
+            }
+
+            const chatData = {
+                sessionId: assistant.sessionId,
+                exportTime: new Date().toISOString(),
+                chatHistory: assistant.chatHistory
+            };
+
+            const blob = new Blob([JSON.stringify(chatData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `chat_export_${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        function closeModal() {
+            const assistant = window.shoppingAssistant;
+            if (assistant) {
+                assistant.closeModal();
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Khởi tạo Shopping Assistant...');
+            window.shoppingAssistant = new ShoppingAssistant();
+
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                // Escape to close modal
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+
+                // Ctrl+L to clear chat
+                if (e.ctrlKey && e.key === 'l') {
+                    e.preventDefault();
+                    clearChat();
+                }
+
+                // Ctrl+N for new session
+                if (e.ctrlKey && e.key === 'n') {
+                    e.preventDefault();
+                    newSession();
+                }
+            });
+
+            // Handle window resize for responsive design
+            window.addEventListener('resize', () => {
+                const container = document.querySelector('.container');
+                if (window.innerWidth <= 768) {
+                    container.classList.add('mobile');
+                } else {
+                    container.classList.remove('mobile');
+                }
+            });
+
+            // Check initial screen size
+            if (window.innerWidth <= 768) {
+                document.querySelector('.container').classList.add('mobile');
+            }
+
+            console.log('✅ Shopping Assistant đã sẵn sàng!');
+        });
+    </script>
+</body>
+
+</html>
